@@ -26,8 +26,10 @@ block main
         .d-flex.align-items-start
           .form-group
             select(name="type" class="form-control")
+              option(disabled selected) -- Chọn hành động --
               option(value="active") Hoạt động
               option(value="inactive") Dừng hoạt động
+              option(value="delete-all") Xóa tất cả
           .form-group.d-none
             input(
               type="text"
@@ -84,7 +86,11 @@ block main
                   ) Dừng hoạt động
               td
                 button(class="btn btn-warning btn-sm") Sửa
-                button(class="btn btn-danger btn-sm ml-1") Xóa
+                button(
+                  class="btn btn-danger btn-sm ml-1"
+                  button-delete 
+                  data-id=item.id
+                ) Xóa
   +pagination(objectPagination)
 
   form(
@@ -92,6 +98,13 @@ block main
     method="POST"
     action=""
     data-path=`${prefixAdmin}/products/change-status`
+  )
+
+  form(
+    form-delete-item
+    method="POST"
+    action=""
+    data-path=`${prefixAdmin}/products/delete`
   )
   
   

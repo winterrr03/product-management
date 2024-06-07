@@ -112,6 +112,16 @@ if (formChangeMulti) {
     e.preventDefault();
 
     const listInputIdChecked = document.querySelectorAll("input[name='id']:checked");
+
+    const type = document.querySelector("select[name='type']").value;
+
+    if (type == "delete-all") {
+      const isConfirm = confirm("Bạn có chắc muốn xóa những bản ghi này?");
+      if(!isConfirm) {
+        return;
+      }
+    }
+
     if (listInputIdChecked.length > 0) {
       const ids = [];
 
@@ -130,3 +140,26 @@ if (formChangeMulti) {
   })
 }
 // End form-change-multi
+
+// button-delete
+const listButtonDelete = document.querySelectorAll("[button-delete]");
+if (listButtonDelete.length > 0) {
+  const formDeleteItem = document.querySelector("[form-delete-item]");
+
+  listButtonDelete.forEach(button => {
+    button.addEventListener("click", () => {
+      const isConfirm = confirm("Bạn có chắc muốn xóa?");
+
+      if (isConfirm) {
+        const id = button.getAttribute("data-id");
+        const path = formDeleteItem.getAttribute("data-path");
+
+        const action = `${path}/${id}?_method=DELETE`;
+
+        formDeleteItem.action = action;
+        formDeleteItem.submit();
+      }
+    });
+  });
+}
+// End button-delete
