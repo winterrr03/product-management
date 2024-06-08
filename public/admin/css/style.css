@@ -49,3 +49,43 @@
   text-decoration: none;
 }
 /* End Sider */
+
+/* Show Alert */
+[show-alert] {
+  position: fixed;
+  top: 70px;
+  right: 15px;
+  z-index: 9999;
+}
+
+[show-alert].alert-hidden {
+  animation-name: alert-hidden;
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+
+@keyframes alert-hidden {
+  from {
+    right: 15px;
+  }
+  to {
+    right: -100%;
+    display: none;
+  }
+}
+/* End Show Alert */
+
+/* image-preview */
+.image-preview {
+  width: 150px;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 15px;
+}
+
+.image-preview[src=""] {
+  display: none;
+}
+/* End image-preview */
