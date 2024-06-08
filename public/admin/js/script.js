@@ -169,3 +169,20 @@ if (listButtonDelete.length > 0) {
   });
 }
 // End button-delete
+
+// Show alert
+const showAlert = document.querySelector("[show-alert]");
+if (showAlert) {
+  let time = showAlert.getAttribute("data-time");
+  time = parseInt(time);
+
+  setTimeout(() => {
+    showAlert.classList.add("alert-hidden");
+  }, time);
+
+  const closeAlert = document.querySelector("[close-alert]");
+  closeAlert.addEventListener("click", () => {
+    showAlert.classList.add("alert-hidden");
+  });
+}
+// End show alert
