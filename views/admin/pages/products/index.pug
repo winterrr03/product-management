@@ -21,27 +21,34 @@ block main
   .card.mb-3 
     .card-header Danh sách sản phẩm
     .card-body
-      form(
-        action=`${prefixAdmin}/products/change-multi?_method=PATCH`
-        method="POST"
-				form-change-multi
-      ) 
-        .d-flex.align-items-start
-          .form-group
-            select(name="type" class="form-control")
-              option(disabled selected) -- Chọn hành động --
-              option(value="active") Hoạt động
-              option(value="inactive") Dừng hoạt động
-              option(value="change-position") Thay đổi vị trí
-              option(value="delete-all") Xóa tất cả
-          .form-group.d-none
-            input(
-              type="text"
-              name="ids"
-              value=""
-              class="form-control"
-            )
-          button(type="submit" class="btn btn-primary") Áp dụng
+      .row 
+        .col-8
+          form(
+            action=`${prefixAdmin}/products/change-multi?_method=PATCH`
+            method="POST"
+            form-change-multi
+          ) 
+            .d-flex.align-items-start
+              .form-group
+                select(name="type" class="form-control")
+                  option(disabled selected) -- Chọn hành động --
+                  option(value="active") Hoạt động
+                  option(value="inactive") Dừng hoạt động
+                  option(value="change-position") Thay đổi vị trí
+                  option(value="delete-all") Xóa tất cả
+              .form-group.d-none
+                input(
+                  type="text"
+                  name="ids"
+                  value=""
+                  class="form-control"
+                )
+              button(type="submit" class="btn btn-primary") Áp dụng
+        .col-4
+          a(
+            href=`${prefixAdmin}/products/create`
+            class="btn btn-outline-success"
+          ) + Thêm mới
 
       table(
         class="table table-hover table-sm"
@@ -98,7 +105,10 @@ block main
                     class="badge badge-danger"
                   ) Dừng hoạt động
               td
-                button(class="btn btn-warning btn-sm") Sửa
+                a(
+                  href=`${prefixAdmin}/products/edit/${item.id}`
+                  class="btn btn-warning btn-sm"
+                ) Sửa
                 button(
                   class="btn btn-danger btn-sm ml-1"
                   button-delete 
