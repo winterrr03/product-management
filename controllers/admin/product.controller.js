@@ -1,5 +1,6 @@
 const Product = require("../../models/product.model");
 const ProductCategory = require("../../models/product-category.model");
+const Account = require("../../models/account.model");
 const filterHelper = require("../../helpers/filter.helper");
 const paginationHelper = require("../../helpers/pagination.helper");
 const systemConfig = require("../../config/system");
@@ -47,6 +48,13 @@ module.exports.index = async (req, res) => {
   
   const products = await Product.find(find).limit(objectPagination.limitItems).skip(objectPagination.skip).sort(sort);
 
+  for (const product of products) {
+    const createdBy = await Account.findOne({
+      _id: product.createdBy
+    });
+    product.createdByFullName = createdBy?.fullName;
+  }
+
   res.render("admin/pages/products/index", {
     pageTitle: "Danh sách sản phẩm",
     products: products,
@@ -64,7 +72,8 @@ module.exports.changeStatus = async (req, res) => {
   await Product.updateOne({
     _id: id
   }, {
-    status: status
+    status: status,
+    updatedBy: res.locals.user.id
   });
 
   const infoProduct = await Product.findOne({
@@ -89,7 +98,8 @@ module.exports.changeMulti = async (req, res) => {
       await Product.updateMany({
         _id: { $in: ids }
       }, {
-        status: type
+        status: type,
+        updatedBy: res.locals.user.id
       });
       req.flash('success', 'Cập nhật trạng thái thành công!');
       break;
@@ -98,7 +108,8 @@ module.exports.changeMulti = async (req, res) => {
         _id: { $in: ids }
       }, {
         deleted: true,
-        deletedAt: new Date()
+        deletedAt: new Date(),
+        deletedBy: res.locals.user.id
       });
       req.flash('success', 'Xóa sản phẩm thành công!');
       break;
@@ -129,7 +140,8 @@ module.exports.deleteItem = async (req, res) => {
     _id: id
   }, {
     deleted: true,
-    deletedAt: new Date()
+    deletedAt: new Date(),
+    deletedBy: res.locals.user.id
   });
 
   req.flash('success', 'Xóa sản phẩm thành công!');
@@ -162,6 +174,8 @@ module.exports.createPost = async (req, res) => {
     const countProduct = await Product.countDocuments();
     req.body.position = countProduct + 1;
   }
+
+  req.body.createdBy = res.locals.user.id;
 
   const record = new Product(req.body);
   await record.save();
@@ -204,6 +218,7 @@ module.exports.editPatch = async (req, res) => {
   req.body.discountPercentage = parseInt(req.body.discountPercentage);
   req.body.stock = parseInt(req.body.stock);
   req.body.position = parseInt(req.body.position);
+  req.body.updatedBy = res.locals.user.id;
 
   await Product.updateOne({
     _id: id,
