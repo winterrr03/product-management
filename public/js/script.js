@@ -37,14 +37,26 @@ if (tableCart) {
 // CLIENT_SEND_MESSAGE
 const formSendData = document.querySelector(".chat .inner-form");
 if (formSendData) {
+  // Upload Images
+  const upload = new FileUploadWithPreview.FileUploadWithPreview('upload-images', {
+    multiple: true,
+    maxFileCount: 6
+  });
+  // End Upload Images
+
   formSendData.addEventListener("submit", (event) => {
     event.preventDefault();
-    const content = formSendData.content.value;
+    const content = formSendData.content.value || "";
+    const images = upload.cachedFileArray || [];
 
-    if (content) {
-      socket.emit("CLIENT_SEND_MESSAGE", content);
+    if (content || images) {
+      socket.emit("CLIENT_SEND_MESSAGE", {
+        content: content,
+        images: images
+      });
       formSendData.content.value = "";
       socket.emit("CLIENT_SEND_TYPING", "hidden");
+      upload.resetPreviewPanel();
     }
   })
 }
@@ -57,6 +69,8 @@ socket.on("SERVER_RETURN_MESSAGE", (data) => {
 
   const div = document.createElement("div");
   let htmlFullName = "";
+  let htmlContent = "";
+  let htmlImages = "";
 
   if (myId == data.user_id) {
     div.classList.add("inner-outgoing");
@@ -65,9 +79,26 @@ socket.on("SERVER_RETURN_MESSAGE", (data) => {
     htmlFullName = `<div class="inner-name">${data.fullName}</div>`;
   }
 
+  if (data.content) {
+    htmlContent = `<div class="inner-content">${data.content}</div>`;
+  }
+
+  if (data.images.length > 0) {
+    htmlImages += `<div class="inner-images">`;
+
+    data.images.forEach(image => {
+      htmlImages += `
+        <img src="${image}">
+      `;
+    })
+
+    htmlImages += `</div>`;
+  }
+
   div.innerHTML = `
     ${htmlFullName}
-    <div class="inner-content">${data.content}</div>
+    ${htmlContent}
+    ${htmlImages}
   `;
 
   const elementListTyping = body.querySelector(".inner-list-typing");
@@ -75,6 +106,8 @@ socket.on("SERVER_RETURN_MESSAGE", (data) => {
   body.insertBefore(div, elementListTyping);
 
   body.scrollTop = body.scrollHeight;
+
+  new Viewer(div);
 })
 // End SERVER_RETURN_MESSAGE
 
@@ -169,3 +202,10 @@ if (elementListTyping) {
   })
 }
 // End SERVER_RETURN_TYPING
+
+// Preview Images Chat
+const bodyChat = document.querySelector(".chat .inner-body");
+if (bodyChat) {
+  new Viewer(bodyChat);
+}
+// End Preview Images Chat
