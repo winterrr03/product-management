@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     ],
     acceptFriends: Array,
     requestFriends: Array,
+    statusOnline: String,
     deleted: {
       type: Boolean,
       default: false,

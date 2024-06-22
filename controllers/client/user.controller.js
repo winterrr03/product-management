@@ -73,12 +73,41 @@ module.exports.loginPost = async (req, res) => {
 
   res.cookie("tokenUser", user.tokenUser);
 
+  await User.updateOne({
+    _id: user.id
+  }, {
+    statusOnline: "online"
+  });
+
+  _io.once('connection', (socket) => {
+    socket.broadcast.emit("SERVER_RETURN_STATUS_ONLINE", {
+      userId: user.id,
+      statusOnline: "online"
+    })
+  });
+
   res.redirect("/");
 };
 
 // [GET] /user/logout
 module.exports.logout = async (req, res) => {
+  const tokenUser = req.cookies.tokenUser;
+
+  await User.updateOne({
+    tokenUser: tokenUser
+  }, {
+    statusOnline: "offline"
+  });
+
+  _io.once('connection', (socket) => {
+    socket.broadcast.emit("SERVER_RETURN_STATUS_ONLINE", {
+      userId: res.locals.user.id,
+      statusOnline: "offline"
+    })
+  });
+
   res.clearCookie("tokenUser");
+  
   res.redirect("/");
 };
 
