@@ -201,3 +201,96 @@ if (uploadImage) {
   });
 }
 // End upload-image
+
+// Sort
+const sort = document.querySelector("[sort]");
+if (sort) {
+  let url = new URL(window.location.href);
+  const sortSelect = sort.querySelector("[sort-select]");
+  const sortClear = sort.querySelector("[sort-clear]");
+
+  sortSelect.addEventListener("change", () => {
+    const [sortKey, sortValue] = sortSelect.value.split("-");
+
+    url.searchParams.set("sortKey", sortKey);
+    url.searchParams.set("sortValue", sortValue);
+
+    window.location.href = url.href;
+  });
+
+  sortClear.addEventListener("click", () => {
+    url.searchParams.delete("sortKey");
+    url.searchParams.delete("sortValue");
+    window.location.href = url.href;
+  });
+
+  // Thêm selected cho lựa chọn hiện tại
+  const selectedSortKey = url.searchParams.get("sortKey");
+  const selectedSortValue = url.searchParams.get("sortValue");
+
+  if (selectedSortKey && selectedSortValue) {
+    const stringSort = `${selectedSortKey}-${selectedSortValue}`;
+    const optionSelected = sortSelect.querySelector(`option[value='${stringSort}']`);
+    optionSelected.selected = true;
+  }
+
+}
+// End Sort
+
+// Table permissions
+const buttonSubmitPermissions = document.querySelector("[button-submit-permissions]");
+
+if (buttonSubmitPermissions) {
+  buttonSubmitPermissions.addEventListener("click", () => {
+    const roles = [];
+    const tablePermissions = document.querySelector("[table-permissions]");
+    const rows = tablePermissions.querySelectorAll("tbody tr[data-name]");
+
+    rows.forEach((row, index) => {
+      const dataName = row.getAttribute("data-name");
+      const inputs = row.querySelectorAll("input");
+
+      if (dataName == "id") {
+        inputs.forEach(input => {
+          const id = input.value;
+          roles.push({
+            id: id,
+            permissions: []
+          });
+        });
+      } else {
+        inputs.forEach((input, index) => {
+          const inputChecked = input.checked;
+          if (inputChecked) {
+            roles[index].permissions.push(dataName);
+          }
+        });
+      }
+    });
+    
+    if (roles.length > 0) {
+      const formChangePermissions = document.querySelector("[form-change-permissions]");
+      const inputRoles = formChangePermissions.querySelector("input[name='roles']");
+      inputRoles.value = JSON.stringify(roles);
+      formChangePermissions.submit();
+    }
+  });
+}
+// End Table Permissions
+
+// Data default Table Permissions
+const dataRecords = document.querySelector("[data-records]");
+if (dataRecords) {
+  const records = JSON.parse(dataRecords.getAttribute("data-records"));
+  const tablePermissions = document.querySelector("[table-permissions]");
+
+  records.forEach((record, index) => {
+    const permissions = record.permissions;
+    permissions.forEach(permission => {
+      const row = tablePermissions.querySelector(`tr[data-name="${permission}"]`);
+      const input = row.querySelectorAll("input")[index];
+      input.checked = true;
+    });
+  });
+}
+// End Data default Table Permissions

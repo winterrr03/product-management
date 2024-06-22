@@ -4,6 +4,10 @@ mongoose.plugin(slug);
 
 const productSchema = new mongoose.Schema({
   title: String,
+  product_category_id: {
+    type: String,
+    default: ""
+  },
   description: String,
   price: Number,
   discountPercentage: Number,
@@ -20,6 +24,13 @@ const productSchema = new mongoose.Schema({
     default: false
   },
   deletedAt: Date,
+  deletedBy: String,
+  createdBy: String,
+  updatedBy: String,
+  featured: {
+    type: String,
+    default: "0"
+  },
   thumbnail: String,
 }, {
   timestamps: true

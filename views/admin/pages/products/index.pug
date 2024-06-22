@@ -17,6 +17,29 @@ block main
           +filter(filterStatus)
         .col-6
           +search(keyword)
+  
+  .card.mb-3
+    .card-header Sắp xếp
+    .card-body
+      .row
+        .col-4
+          div(sort)
+            select(
+              class="form-control"
+              name="sort"
+              sort-select
+            )
+              option(value="position-desc") Vị trí giảm dần
+              option(value="position-asc") Vị trí tăng dần
+              option(value="price-desc") Giá giảm dần
+              option(value="price-asc") Giá tăng dần
+              option(value="title-asc") Tiêu đề A - Z
+              option(value="title-desc") Tiêu đề Z - A
+
+            button(
+              class="btn btn-danger mt-2"
+              sort-clear
+            ) Clear
 
   .card.mb-3 
     .card-header Danh sách sản phẩm
@@ -64,6 +87,7 @@ block main
             th Giá
             th Vị trí
             th Trạng thái
+            th Tạo bởi
             th Hành động
 
         tbody
@@ -71,7 +95,7 @@ block main
             tr
               td
                 input(type="checkbox" name="id" value=item.id)
-              td #{index + 1}
+              td #{objectPagination.limitItems * (objectPagination.currentPage - 1) + index + 1}
               td
                 img(
                   src=item.thumbnail
@@ -104,6 +128,9 @@ block main
                     data-status="active"
                     class="badge badge-danger"
                   ) Dừng hoạt động
+              td
+                div #{item.createdByFullName}
+                div #{moment(item.createdAt).format("DD/MM/YYYY HH:mm")}
               td
                 a(
                   href=`${prefixAdmin}/products/edit/${item.id}`
